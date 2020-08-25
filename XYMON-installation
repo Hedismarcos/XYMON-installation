@@ -1,0 +1,20 @@
+groupadd xymon
+useradd -g xymon -m xymon
+
+yum install gcc make fping pcre-devel openssl-devel openldap-devel rrdtool-devel libtirpc-devel -y
+
+cd /usr/src
+wget https://sourceforge.net/projects/xymon/files/Xymon/4.3.30/xymon-4.3.30.tar.gz
+tar -zxf xymon-4.3.30.tar.gz
+cd xymon-4.3.30
+./configure --client
+# Choose /usr/lib/xymon/client as the directory to install
+chown -R nobody .
+sudo -u nobody make
+make install
+cp rpm/xymon-client.init /etc/init.d/xymon-client
+cp rpm/xymon-client.default /etc/default/xymon-client
+# configure IP address in /etc/default/xymon-client
+chmod +x /etc/init.d/xymon-client
+service xymon-client start
+chkconfig xymon-client on
